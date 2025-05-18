@@ -1,0 +1,11 @@
+# DIRECTORIES
+.idea
+dist
+*.egg-info
+tests
+venv
+
+# Files
+.env
+.python-version
+index.py
