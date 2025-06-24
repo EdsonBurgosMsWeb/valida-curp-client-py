@@ -194,12 +194,6 @@ For support, please contact:
 - Email: soporte@multiservicios-web.com.mx
 - Website: https://valida-curp.com.mx/soporte
 
-## 9. Contributing
-
-Contributions are welcome! Please read our:
-- [Contribution Guidelines](https://github.com/EdsonBurgosMsWeb/valida-curp-client-py/blob/main/CONTRIBUTING.md)
-- [Code of Conduct](https://github.com/EdsonBurgosMsWeb/valida-curp-client-py/blob/main/CODE_OF_CONDUCT.md)
-
-## 10. License
+## 9. License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/EdsonBurgosMsWeb/valida-curp-client-py/blob/main/LICENSE) file for details.
