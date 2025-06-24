@@ -1,7 +1,7 @@
 # **ValidaCurp Python Client**
 
-[![PyPI version](https://badge.fury.io/py/valida-curp.svg)](https://badge.fury.io/py/valida-curp)
-[![Python versions](https://img.shields.io/pypi/pyversions/valida-curp.svg)](https://pypi.org/project/valida-curp/)
+[![PyPI version](https://badge.fury.io/py/multiserviciosweb.svg)](https://badge.fury.io/py/multiserviciosweb)
+[![Python versions](https://img.shields.io/pypi/pyversions/multiserviciosweb.svg)](https://pypi.org/project/multiserviciosweb/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 * This library can validate, calculate and obtain CURP information in México.
@@ -13,15 +13,7 @@
 ## 1. Requirements
 
 - Python 3.7 or later
-- requests library
-- python-dotenv library
-
-```bash
-# Install requests
-pip install requests
-# Install python-dotenv
-pip install python-dotenv
-```
+- Instalación automática de dependencias (`requests` y `python-dotenv`)
 
 ## 2. Installation
 
@@ -35,15 +27,15 @@ pip install multiserviciosweb
 
 ### 3.1. Create an account
 
-Create an account following this link: https://valida-curp.tawk.help/article/registro-de-usuario
+Create an account following this link: https://valida-curp.com.mx/registro
 
 ### 3.2. Create a project
 
-Create a project following this link: https://valida-curp.tawk.help/article/creaci%C3%B3n-de-proyecto
+Create a project following this link: https://valida-curp.com.mx/proyectos/crear
 
 ### 3.3. Get token
 
-Get your token following this link: https://valida-curp.tawk.help/article/obtener-token-llave-privada-proyecto
+Get your token from project dashboard: https://valida-curp.com.mx/proyectos
 
 ## **4. Usage**
 
@@ -55,213 +47,159 @@ from MultiServiciosWeb import ValidaCurp, ValidaCurpException
 
 ### 4.2. Create instance
 
-You can add your token as the first parameter or having it in your .env file and automatically take the token:
+You can provide token in 3 ways:
 
 ```python
-# Add your token as a parameter
+# Option 1: Directly in constructor
 valida_curp = ValidaCurp('YOUR-TOKEN')
 ```
 
 ```python
-# Agrega tu token en tu archivo .env
-TOKEN_VALIDA_API_CURP = 'YOUR-TOKEN'
+# Option 2: Environment variable (.env file)
+# .env content:
+# TOKEN_VALIDA_API_CURP = 'YOUR-TOKEN'
 
-# Create the instance
+valida_curp = ValidaCurp()
+```
+
+```python
+# Option 3: System environment variable
+# export TOKEN_VALIDA_API_CURP='YOUR-TOKEN'
+
 valida_curp = ValidaCurp()
 ```
 
 ### 4.3. (Optional) Set API Version
 
-You can set the API version to query. You can set 1 or 2. The default value is 2.
+You can set the API version (1 or 2). Default is 2:
 
 ```python
-valida_curp.set_version(1)  # 1 or 2
+valida_curp.set_version(2)  # 1 for legacy, 2 for current
+```
+
+### 4.4. (Optional) Custom Endpoint
+
+```python
+valida_curp = ValidaCurp(
+    token='YOUR-TOKEN',
+    custom_endpoint='https://custom.valida-curp.com.mx/'
+)
 ```
 
 ## 5. Methods
 
 ### 5.1. Validate CURP
 
-`is_valid()` method takes a CURP as a parameter and validates the CURP structure.
-
 ```python
-valida_curp = ValidaCurp()
-validation_result = valida_curp.is_valid('PUT-CURP-HERE')
-print(f"Validation result: {validation_result}")
-```
-
-Response
-
-```bash
-# Successful response
-{'valido': True}
-# Failed response
-{'valido': False}
+validation_result = valida_curp.is_valid('BUME980528HDFRCD02')
+print(validation_result)
+# Output: {'valido': True} or {'valido': False}
 ```
 
 ### 5.2. Get CURP data
 
-`get_data()` method takes a CURP as a parameter and consults the CURP information in RENAPO.
-
 ```python
-valida_curp = ValidaCurp()
-curp_data = valida_curp.get_data('PUT-CURP-HERE')
-print(f"CURP data: {curp_data}")
-```
-
-Response
-
-```json
-{
-  'Applicant': {
-    'CURP': 'BUME980528HDFRCD02',
-    'Names': 'EDSON EDIAN',
-    'LastName': 'BURGOS',
-    'SecondLastName': 'MACEDO',
-    'GenderKey': 'H',
-    'Gender': 'Hombre',
-    'DateOfBirth': '1998-05-28',
-    'Nacionality': 'MEX',
-    'CodeEntityBirth': 'DF',
-    'EntityBirth': 'Ciudad de México',
-    'KeyEvidentiaryDocument': 1,
-    'EvidentiaryDocument': 'Acta de nacimiento',
-    'CurpStatusKey': 'RCN',
-    'CurpStatus': 'Registro de cambio no afectando a CURP'
-  },
-  'EvidentiaryDocument': {
-    'YearRegistration': 1998,
-    'KeyIssuingEntity': '',
-    'KeyMunicipalityRegistration': 15,
-    'MunicipalityRegistration': '',
-    'Foja': 0,
-    'FolioLetter': '',
-    'Book': 0,
-    'CertificateNumber': 859,
-    'RegistrantNumber': 9,
-    'RegistrationEntity': 'Ciudad de México',
-    'ForeignRegistrationNumber': '',
-    'Volume': 0
-  }
-}
+curp_data = valida_curp.get_data('BUME980528HDFRCD02')
+print(curp_data)
+# Output: Dictionary with CURP information
 ```
 
 ### 5.3. Calculate CURP
 
-Calculates the structure of a CURP with provided data.
-`calculate()` receives a dictionary with the following keys:
-`names`, `lastName`, `secondLastName`, `birthDay`, `birthMonth`, `birthYear`, `gender`, `entity`
-
 ```python
-result = valida_curp.calculate({
-    'names': 'XXXXX XXXXX',
-    'lastName': 'XXXXXX',
-    'secondLastName': 'XXXXXX',
-    'birthDay': '28',
-    'birthMonth': '05',
-    'birthYear': '1998',
-    'gender': 'H',
-    'entity': '15',
-})
-print(result)
-```
-
-Response
-
-```json
-{
-  'curp': 'XXXX980528HDFRCD06'
+person_data = {
+    'names': 'Juan Carlos',
+    'lastName': 'García',
+    'secondLastName': 'López',
+    'birthDay': '15',
+    'birthMonth': '08',
+    'birthYear': '1990',
+    'gender': 'H',  # H: Hombre, M: Mujer
+    'entity': '09'  # CDMX
 }
+
+result = valida_curp.calculate(person_data)
+print(result)
+# Output: {'curp': 'GALJ900815HDFRPN01'}
 ```
 
 ### 5.4. Get entities
 
-`get_entities()` method gets the list of entities.
-
 ```python
 entities = valida_curp.get_entities()
 print(entities)
+# Output: Dictionary with all Mexican states and codes
 ```
 
-Response
-
-```json5
-{
-  'clave_entidad': [
-    {
-      'clave_entidad': '01',
-      'nombre_entidad': 'AGUASCALIENTES',
-      'abreviatura_entidad': 'AS'
-    },
-    {
-      'clave_entidad': '02',
-      'nombre_entidad': 'BAJA CALIFORNIA',
-      'abreviatura_entidad': 'BC'
-    },
-    #
-    #...
-    #more
-    #entities
-  ]
-}
-```
-
-## 6. Full example
+## 6. Full Example
 
 ```python
-from valida_curp import Client, ValidaCurpException
+from MultiServiciosWeb import ValidaCurp, ValidaCurpException
 
 try:
     # Initialize client
-    valida_curp = Client("YOUR-TOKEN")
-
-    # Validate CURP structure
-    print(valida_curp.is_valid('PXNE660720HMCXTN06'))
-
-    # Get CURP data
-    print(valida_curp.get_data('PXNE660720HMCXTN06'))
-
-    # Calculate CURP
-    print(valida_curp.calculate({
-        'names': 'XXXXX XXXXX',
-        'lastName': 'XXXXXX',
-        'secondLastName': 'XXXXXX',
-        'birthDay': '28',
-        'birthMonth': '05',
-        'birthYear': '1998',
-        'gender': 'H',
-        'entity': '15',
-    }))
-
-    # Get entities
-    print(valida_curp.get_entities())
+    valida_curp = ValidaCurp('YOUR-TOKEN')
+    
+    # 1. Validate CURP
+    print("Validating CURP:", valida_curp.is_valid('BUME980528HDFRCD02'))
+    
+    # 2. Get CURP data
+    print("CURP data:", valida_curp.get_data('BUME980528HDFRCD02'))
+    
+    # 3. Calculate CURP
+    person_data = {
+        'names': 'María Fernanda',
+        'lastName': 'Hernández',
+        'secondLastName': 'Jiménez',
+        'birthDay': '22',
+        'birthMonth': '11',
+        'birthYear': '1985',
+        'gender': 'M',
+        'entity': '14'  # Jalisco
+    }
+    print("Calculated CURP:", valida_curp.calculate(person_data))
+    
+    # 4. Get entities
+    print("Entities:", valida_curp.get_entities())
+    
+    # 5. Switch to API v1
+    valida_curp.set_version(1)
+    print("Entities (v1):", valida_curp.get_entities())
 
 except ValidaCurpException as e:
-    print(f"Valida CURP Exception: {e}")
+    print(f"API Error: {e}")
 except Exception as e:
-    print(f"Request Exception: {e}")
+    print(f"General Error: {e}")
 ```
 
 ## 7. Error Handling
 
-The library raises `ValidaCurpException` for API-related errors:
+Handle specific errors:
 
-- Authentication failures (401, 403)
-- Bad requests (400)
-- Missing required parameters
-- Invalid API version
+```python
+try:
+    valida_curp.get_data('INVALID-CURP')
+except ValidaCurpException as e:
+    if "Authentication" in str(e):
+        print("Check your token")
+    elif "Bad request" in str(e):
+        print("Invalid parameters")
+    else:
+        print(f"API Error: {e}")
+```
 
-For HTTP-related errors, the standard `requests` exceptions are raised.
+## 8. Support
 
-## 8. Credits
+For support, please contact:
+- Email: soporte@multiservicios-web.com.mx
+- Website: https://valida-curp.com.mx/soporte
 
-- Copyright (c) **Multiservicios Web JCA S.A. de C.V.**, https://multiservicios-web.com.mx
-- **Author:** Edson burgos <edsonburgosmacedo@gmail.com>
+## 9. Contributing
 
-## 9. License
+Contributions are welcome! Please read our:
+- [Contribution Guidelines](https://github.com/EdsonBurgosMsWeb/valida-curp-client-py/blob/main/CONTRIBUTING.md)
+- [Code of Conduct](https://github.com/EdsonBurgosMsWeb/valida-curp-client-py/blob/main/CODE_OF_CONDUCT.md)
 
-This project is released under the MIT License. See the [LICENSE](./LICENSE) file for details.
+## 10. License
 
-## 10. Support
-
-For support, please visit: https://valida-curp.com.mx
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/EdsonBurgosMsWeb/valida-curp-client-py/blob/main/LICENSE) file for details.
